@@ -4,13 +4,13 @@ const greetUser = (name) => {
   return `Hello, ${name}!`;
 };
 
-console.log(greetUser("Alex"));
+console.log(greetUser("Sumeru"));
 
 
 // Practice 2: Destructuring
 
 const user = {
-  name: "John",
+  name: "sri",
   age: 25,
   role: "Developer"
 };
