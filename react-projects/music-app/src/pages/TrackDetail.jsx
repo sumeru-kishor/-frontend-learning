@@ -1,27 +1,28 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import ShareIcon from '../assets/images/share-icon.svg'
+import EllipsisIcon from '../assets/images/ellipsis.svg'
+import FavouritesIcon from '../assets/images/favourites.svg'
 
 function TrackDetail() {
-  const { id }       = useParams()
-  const location     = useLocation()
-  const navigate     = useNavigate()
+  const { id } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const [track,       setTrack]       = useState(location.state?.track || null)
-  const [loading,     setLoading]     = useState(!track)
-  const [favourites,  setFavourites]  = useState(() => {
-    // load favourites from localStorage
+  const [track, setTrack] = useState(location.state?.track || null)
+  const [loading, setLoading] = useState(!track)
+  const [favourites, setFavourites] = useState(() => {
     const saved = localStorage.getItem('favourites')
     return saved ? JSON.parse(saved) : []
   })
 
   const isFavourited = favourites.some(f => f.trackId === track?.trackId)
 
-  // if page is refreshed, fetch track again
   useEffect(() => {
     if (!track) {
       const fetchTrack = async () => {
         try {
-          const res  = await fetch(`https://itunes.apple.com/lookup?id=${id}`)
+          const res = await fetch(`https://itunes.apple.com/lookup?id=${id}`)
           const data = await res.json()
           setTrack(data.results[0])
         } catch (err) {
@@ -32,156 +33,197 @@ function TrackDetail() {
       }
       fetchTrack()
     }
-  }, [id])
+  }, [id, track])
 
   const toggleFavourite = () => {
     let updated
     if (isFavourited) {
-      // remove from favourites
       updated = favourites.filter(f => f.trackId !== track.trackId)
     } else {
-      // add to favourites
       updated = [...favourites, track]
     }
     setFavourites(updated)
     localStorage.setItem('favourites', JSON.stringify(updated))
   }
 
-  if (loading) return (
-    <div style={{ textAlign: 'center', padding: '60px' }}>
-      <div style={styles.spinner} />
-      <p style={{ color: '#94a3b8', marginTop: 16 }}>Loading track...</p>
-    </div>
-  )
-
-  if (!track) return (
-    <div style={{ color: '#dc2626', padding: 40 }}>Track not found.</div>
-  )
+  if (loading) return <div style={styles.loadingState}>Loading track...</div>
 
   return (
     <div style={styles.page}>
-
-      {/* Back Button */}
-      <button style={styles.backBtn} onClick={() => navigate('/tracks')}>
-        ← Back
-      </button>
-
+      <button style={styles.backBtn} onClick={() => navigate('/')}>
+  <span>←</span>
+  <span>Back</span>
+</button>
       <div style={styles.card}>
+        {/* 2. Top Header Section */}
+        <div style={styles.headerSection}>
+          <img 
+            src={track.artworkUrl100.replace('100x100', '600x600')} 
+            alt={track.trackName} 
+            style={styles.mainImg} 
+          />
+          <div style={styles.headerInfo}>
+            <span style={styles.categoryLabel}>SINGLE</span>
+            <h1 style={styles.mainTitle}>{track.trackName}</h1>
+            <p style={styles.subTextArtist}>{track.artistName}</p>
+            <p style={styles.metaData}>
+              {track.collectionName} • {new Date(track.releaseDate).getFullYear()}
+            </p>
 
-        {/* Top Section */}
-        <div style={styles.top}>
-          <img src={track.artworkUrl100.replace('100x100', '300x300')} alt={track.trackName} style={styles.img} />
-          <div style={styles.info}>
-
-            <span style={styles.genre}>{track.primaryGenreName}</span>
-            <h1 style={styles.trackName}>{track.trackName}</h1>
-            <p style={styles.artist}>{track.artistName}</p>
-            <p style={styles.album}>{track.collectionName} • {new Date(track.releaseDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-
-            {/* Action Buttons */}
-            <div style={styles.actions}>
-              <a href={track.previewUrl} target="_blank" rel="noreferrer" style={styles.playBtn}>
-                ▶ Play Preview
+            <div style={styles.buttonGroup}>
+              <a href={track.previewUrl} target="_blank" rel="noreferrer" style={styles.playAction}>
+                <span style={{ marginRight: '8px' }}>▶</span> Play
               </a>
-              <button
-                style={{ ...styles.favBtn, background: isFavourited ? '#fce7f3' : '#f8fafc', color: isFavourited ? '#e91e8c' : '#64748b' }}
-                onClick={toggleFavourite}
-              >
-                {isFavourited ? '🩷' : '🤍'}
+              <button style={styles.iconCircle} onClick={toggleFavourite}>
+                <img src={FavouritesIcon} alt="Fav" style={{ width: 18, height: 18, filter: isFavourited ? 'invert(21%) sepia(100%) saturate(7414%) hue-rotate(329deg) brightness(94%) contrast(93%)' : 'none' }} />
+              </button>
+              <button style={styles.iconCircle}>
+                <img src={ShareIcon} alt="Share" style={{ width: 18, height: 18 }} />
+              </button>
+              <button style={styles.iconCircle}>
+                <img src={EllipsisIcon} alt="More" style={{ width: 18, height: 18 }} />
               </button>
             </div>
-
           </div>
         </div>
 
-        {/* Track Details Table */}
-        <div style={styles.detailsSection}>
-          <h3 style={styles.detailsTitle}>Track Details</h3>
-          <div style={styles.table}>
-            {[
-              { label: 'Artist',       value: track.artistName },
-              { label: 'Album',        value: track.collectionName },
-              { label: 'Release Date', value: new Date(track.releaseDate).toLocaleDateString() },
-              { label: 'Genre',        value: track.primaryGenreName },
-              { label: 'Duration',     value: `${Math.floor(track.trackTimeMillis / 60000)}:${String(Math.floor((track.trackTimeMillis % 60000) / 1000)).padStart(2, '0')}` },
-              { label: 'Price',        value: track.trackPrice > 0 ? `$${track.trackPrice}` : 'Free Preview' },
-            ].map(row => (
-              <div key={row.label} style={styles.row}>
-                <span style={styles.rowLabel}>{row.label}</span>
-                <span style={styles.rowValue}>{row.value}</span>
-              </div>
-            ))}
+        {/* 3. Track Details Container */}
+        <div style={styles.detailsContainer}>
+          <h3 style={styles.sectionHeading}>Track Details</h3>
+          <div style={styles.infoGrid}>
+            <div style={styles.infoBlock}>
+              <span style={styles.label}>Artist</span>
+              <span style={styles.value}>{track.artistName}</span>
+            </div>
+            <div style={styles.infoBlock}>
+              <span style={styles.label}>Album</span>
+              <span style={styles.value}>{track.collectionName}</span>
+            </div>
+            <div style={styles.infoBlock}>
+              <span style={styles.label}>Release Date</span>
+              <span style={styles.value}>
+                {new Date(track.releaseDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+            <div style={styles.infoBlock}>
+              <span style={styles.label}>Genre</span>
+              <span style={styles.value}>{track.primaryGenreName}</span>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   )
 }
 
 const styles = {
-  page: { maxWidth: '750px' },
-  backBtn: {
-    background: 'transparent', border: '1px solid #e2e8f0',
-    borderRadius: '8px', padding: '8px 16px',
-    cursor: 'pointer', fontSize: '14px',
-    color: '#64748b', marginBottom: '24px',
-    fontWeight: '600',
+  page: { 
+    flex: 1, 
+    // Deepened the background color for better contrast against the white card
+    backgroundColor: '#f1f5f9', 
+    minHeight: '100vh', 
+    padding: '40px 60px',
+    fontFamily: "'Inter', sans-serif" 
   },
-  card: {
-    background: '#fff', border: '1px solid #e2e8f0',
-    borderRadius: '16px', padding: '32px',
+ backBtn: {
+  background: 'none', border: 'none', color: '#64748b',
+  fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+  marginBottom: '24px', display: 'flex', alignItems: 'center',
+  gap: '6px' 
+},
+ card: {
+  maxWidth: '1000px',
+  margin: '0 auto',
+  borderRadius: '24px',
+  padding: '40px',
+},
+  headerSection: {
+    display: 'flex', 
+    gap: '48px', 
+    alignItems: 'center', 
+    marginBottom: '48px'
   },
-  top: {
-    display: 'flex', gap: '28px',
-    marginBottom: '32px', flexWrap: 'wrap',
+  mainImg: {
+    width: '280px', 
+    height: '280px', 
+    borderRadius: '20px', 
+    objectFit: 'cover', 
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
   },
-  img: {
-    width: '200px', height: '200px',
-    borderRadius: '12px', objectFit: 'cover',
-    flexShrink: 0,
+  headerInfo: { flex: 1 },
+  categoryLabel: { 
+    fontSize: '12px', 
+    fontWeight: '700', 
+    color: '#94a3b8', 
+    letterSpacing: '0.1em', 
+    marginBottom: '8px',
+    display: 'block'
   },
-  info: { flex: 1 },
-  genre: {
-    display: 'inline-block',
-    background: '#eff6ff', color: '#3b82f6',
-    borderRadius: '20px', padding: '3px 12px',
-    fontSize: '12px', fontWeight: '600',
-    marginBottom: '12px',
+  mainTitle: { 
+    fontSize: '48px', 
+    fontWeight: '800', 
+    color: '#0f172a', 
+    margin: '0 0 12px 0', 
+    letterSpacing: '-0.02em' 
   },
-  trackName: { fontSize: '28px', fontWeight: '800', color: '#1a1a2e', marginBottom: '8px' },
-  artist: { fontSize: '16px', color: '#64748b', marginBottom: '4px' },
-  album: { fontSize: '13px', color: '#94a3b8', marginBottom: '20px' },
-  actions: { display: 'flex', gap: '10px', alignItems: 'center' },
-  playBtn: {
-    padding: '10px 20px', background: '#1a1a2e',
-    color: '#fff', borderRadius: '20px',
-    textDecoration: 'none', fontSize: '14px',
-    fontWeight: '700',
+  subTextArtist: { 
+    fontSize: '22px', 
+    color: '#475569', 
+    fontWeight: '500', 
+    margin: '0 0 8px 0' 
   },
-  favBtn: {
-    padding: '10px 14px', border: '1px solid #e2e8f0',
-    borderRadius: '20px', cursor: 'pointer',
-    fontSize: '18px',
+  metaData: { 
+    fontSize: '14px', 
+    color: '#94a3b8', 
+    margin: '0 0 32px 0' 
   },
-  detailsSection: {},
-  detailsTitle: { fontSize: '16px', fontWeight: '700', color: '#1a1a2e', marginBottom: '16px' },
-  table: { border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' },
-  row: {
-    display: 'flex', justifyContent: 'space-between',
-    padding: '12px 16px', borderBottom: '1px solid #f1f5f9',
-    fontSize: '14px',
+  buttonGroup: { display: 'flex', gap: '16px', alignItems: 'center' },
+  playAction: {
+    background: '#2563eb', 
+    color: '#fff', 
+    padding: '12px 36px',
+    borderRadius: '30px', 
+    fontWeight: '700', 
+    textDecoration: 'none',
+    fontSize: '15px', 
+    display: 'flex',
+    alignItems: 'center',
+    boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.4)'
   },
-  rowLabel: { color: '#94a3b8', fontWeight: '600' },
-  rowValue: { color: '#1a1a2e', fontWeight: '600' },
-  spinner: {
-    width: '40px', height: '40px',
-    border: '4px solid #e2e8f0',
-    borderTop: '4px solid #e91e8c',
-    borderRadius: '50%',
-    animation: 'spin 0.8s linear infinite',
-    margin: '0 auto',
+  iconCircle: {
+    width: '48px', 
+    height: '48px', 
+    borderRadius: '50%', 
+    border: '1px solid #e2e8f0',
+    background: '#fff', 
+    cursor: 'pointer', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    transition: 'all 0.2s ease'
   },
-}
+  detailsContainer: {
+  marginTop: '40px',
+  padding: '32px 40px',
+  background: '#ffffff',
+  borderRadius: '20px',
+  border: '1px solid rgba(226, 232, 240, 0.8)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+},
+  sectionHeading: { 
+    fontSize: '22px', 
+    fontWeight: '800', 
+    color: '#0f172a', 
+    marginBottom: '24px' 
+  },
+  infoGrid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+    gap: '40px' 
+  },
+  infoBlock: { display: 'flex', flexDirection: 'column', gap: '6px' },
+  label: { fontSize: '13px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' },
+  value: { fontSize: '16px', color: '#1e293b', fontWeight: '600' }
+};
 
-export default TrackDetail
+export default TrackDetail;

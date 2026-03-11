@@ -5,114 +5,149 @@ function Navbar() {
 
   const isActive = (path) => location.pathname === path
 
+  // SVG for the Home Icon
+  const HomeIcon = ({ color }) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  )
+
+  // SVG for the Heart Icon
+  const HeartIcon = ({ color }) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+    </svg>
+  )
+
   return (
     <div style={styles.navbar}>
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');`}
+      </style>
 
-      {/* Logo */}
       <div style={styles.logo}>
-        <div style={styles.logoIcon}>🎵</div>
         <div>
           <div style={styles.logoText}>MusicStream</div>
           <div style={styles.logoSub}>Your music, your way</div>
         </div>
       </div>
-
-      {/* Nav Links */}
       <div style={styles.links}>
         <Link
           to="/"
           style={{
             ...styles.link,
-            background: isActive('/') ? '#1a1a2e' : 'transparent',
+            background: isActive('/') ? '#000' : 'transparent',
             color: isActive('/') ? '#fff' : '#64748b',
           }}
         >
-          🏠 Home
+          <HomeIcon color={isActive('/') ? '#fff' : '#64748b'} />
+          <span>Home</span>
         </Link>
 
         <Link
           to="/favourites"
           style={{
             ...styles.link,
-            background: isActive('/favourites') ? '#e91e8c' : 'transparent',
+            background: isActive('/favourites') ? '#000' : 'transparent',
             color: isActive('/favourites') ? '#fff' : '#64748b',
           }}
         >
-          🩷 Favourites
+          <HeartIcon color={isActive('/favourites') ? '#fff' : '#64748b'} />
+          <span>Favourites</span>
         </Link>
       </div>
 
-      {/* User */}
+      {/* User Section */}
       <div style={styles.user}>
-        <div style={styles.userAvatar}>M</div>
+        <div style={styles.userAvatar}>U</div>
         <div>
           <div style={styles.userName}>Music Lover</div>
           <div style={styles.userPlan}>Premium Member</div>
         </div>
       </div>
-
     </div>
   )
 }
 
 const styles = {
   navbar: {
-    width: '220px',
+    width: '240px',
     minHeight: '100vh',
     background: '#fff',
-    borderRight: '1px solid #e2e8f0',
-    padding: '24px 16px',
+    borderRight: '1px solid #f0f0f0',
+    padding: '32px 16px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    fontFamily: "'Inter', sans-serif",
     position: 'sticky',
     top: 0,
   },
   logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
+    padding: '0 12px 40px 12px',
   },
-  logoIcon: { fontSize: '28px' },
-  logoText: { fontSize: '16px', fontWeight: '800', color: '#1a1a2e' },
-  logoSub: { fontSize: '11px', color: '#94a3b8' },
+  logoText: { 
+    fontSize: '20px', 
+    fontWeight: '700', 
+    color: '#000',
+    letterSpacing: '-0.02em'
+  },
+  logoSub: { fontSize: '12px', color: '#94a3b8', marginTop: '4px' },
   links: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '8px',
   },
   link: {
     textDecoration: 'none',
-    padding: '10px 14px',
+    padding: '12px 16px',
     borderRadius: '10px',
     fontSize: '14px',
-    fontWeight: '600',
-    transition: 'all 0.2s',
-    display: 'block',
+    fontWeight: '500',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    transition: 'all 0.2s ease',
   },
   user: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
+    gap: '12px',
     marginTop: 'auto',
-    padding: '12px',
-    background: '#f8fafc',
-    borderRadius: '12px',
+    padding: '16px 12px',
+   
   },
   userAvatar: {
-    width: '36px',
-    height: '36px',
+    width: '44px', 
+    height: '44px',
     borderRadius: '50%',
-    background: '#6366f1',
+  
+    background: 'linear-gradient(135deg, #4f46e5 0%, #a855f7 100%)',
     color: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '700',
-    fontSize: '16px',
+    fontWeight: '600',
+    fontSize: '18px',
+    fontFamily: "'Inter', sans-serif",
   },
-  userName: { fontSize: '13px', fontWeight: '700', color: '#1a1a2e' },
-  userPlan: { fontSize: '11px', color: '#94a3b8' },
+  userInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  userName: { 
+    fontSize: '16px', 
+    fontWeight: '600', 
+    color: '#1e293b',  
+    lineHeight: '1.2',
+  },
+  userPlan: { 
+    fontSize: '13px', 
+    color: '#94a3b8', 
+    marginTop: '2px',
+    fontWeight: '400',
+  },
 }
+
 
 export default Navbar
