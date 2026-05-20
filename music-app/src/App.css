@@ -1,0 +1,165 @@
+.App {
+  text-align: center;
+  width: 100%;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile-first responsive design */
+
+/* Extra small devices (phones, < 600px) */
+@media (max-width: 599px) {
+  .App {
+    width: 100%;
+    padding: 0;
+  }
+  
+  main {
+    width: 100% !important;
+    padding: 16px !important;
+    margin-top: 56px;
+  }
+  
+  h1, h2, h3 {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+  }
+  
+  h4, h5, h6 {
+    font-size: 1rem;
+    margin: 0.3rem 0;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+/* Small devices (tablets, 600px - 960px) */
+@media (min-width: 600px) and (max-width: 960px) {
+  main {
+    width: calc(100% - 240px) !important;
+    padding: 20px !important;
+  }
+  
+  h1, h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3, h4 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Medium devices and up (desktop, >= 960px) */
+@media (min-width: 960px) {
+  .App {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  main {
+    width: calc(100% - 240px) !important;
+    padding: 24px !important;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Large devices and up (large desktop, >= 1440px) */
+@media (min-width: 1440px) {
+  .App {
+    max-width: 1600px;
+  }
+}
+
+/* Portrait mode adjustments */
+@media (orientation: portrait) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  main {
+    margin-top: 0 !important;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  button, a, input {
+    min-height: 44px;
+  }
+}
+
+/* Tablets in portrait */
+@media (min-width: 768px) and (max-width: 1024px) {
+  main {
+    padding: 20px !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  button, a {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 16px;
+  }
+  
+  .card {
+    margin-bottom: 12px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
